@@ -1,0 +1,58 @@
+[
+  {
+    "NodeA": {
+      "Type": "Input",
+      "Channel":"DI_Channel_I1_0", 
+      "Initial State": "GPIO_PIN_RESET"
+    }
+  },
+  {
+    "NodeB": {
+      "Type": "Input",
+      "Channel":"DI_Channel_I0_0", 
+      "Initial State": "GPIO_PIN_SET"
+    }
+  },
+  {
+    "NodeC": {
+      "Type": "Input",
+      "Channel":"DI_Channel_I0_0", 
+      "Initial State": "GPIO_PIN_SET"
+    }
+  },
+  {
+    "NodeD": {
+      "Type": "Input",
+      "Channel":"DI_Channel_I0_0", 
+      "Initial State": "GPIO_PIN_SET"
+    }
+  },
+  {
+    "NodeE": {
+      "Type": "Input",
+      "Channel":"DI_Channel_I0_0", 
+      "Initial State": "GPIO_PIN_SET"
+    }
+  },
+  {
+    "NodeE": {
+      "Type": "Input",
+      "Channel":"DI_Channel_I1_0", 
+      "Initial State": "GPIO_PIN_RESET"
+    }
+  },
+  {
+    "NodeF": {
+      "Type": "Input",
+      "Channel":"DI_Channel_I1_0", 
+      "Initial State": "GPIO_PIN_RESET"
+    }
+  },
+  {
+    "NodeG": {
+      "Type": "Input",
+      "Channel":"DI_Channel_I1_0", 
+      "Initial State": "GPIO_PIN_RESET"
+    }
+  },
+]

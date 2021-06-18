@@ -1,17 +1,25 @@
 #include <stdio.h>
+#include <string.h>
 
-int main()
+int main ()
 {
-  int n;
-  printf("Enter the value of n:");
-  scanf("%d",&n);
-  for(int i=0;i<n;i++)
-  {
-    for(int j=0;j<i+1;j++)
-    {
-    printf("*");
-    }
-     printf("\n");
-  }
+  FILE * fp;
+  int i,n;
+  char str[20];
+  fp = fopen ("autoCodeSetup.c","w"); 
+  strcpy(str, "void ladder(void){");
+  fputs(str, fp);
+  fputs("\n", fp);
+
+  strcpy(str, " STPLC_setoneDO(channel_ name)");
+  fputs(str, fp);
+  fputs("\n", fp);
+
+  strcpy(str, "}");
+  fputs(str, fp);
+  fputs("\n", fp);
+
  
+  fclose (fp);
+  return 0;
 }
