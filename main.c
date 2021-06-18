@@ -54,8 +54,8 @@ static void process_value(json_value* value, int depth)
                         printf("none\n");
                         break;
                 case json_null:
-                        printf("NULL\n");
-                        break;        
+                          printf("NULL\n");
+                         break;        
                 case json_object:
                         process_object(value, depth+1);
                         break;
@@ -82,22 +82,76 @@ static void process_value(json_value* value, int depth)
 
 int main ()
 {
- 
+  char* filename;
+  FILE *fp;
+  struct stat filestatus;
+  int file_size;
+  char* file_contents;
+  json_char* json;
+  json_value* value;
+       
+  filename = "valid.json";
+
   FILE * Ldsetup; 
   char *plcdata;
 
   Ldsetup = fopen ("autoCodeSetup.c","w"); 
-  free(plcdata);
   plcdata = (char*)malloc(strlen("void ladder(void){"));
   strcpy(plcdata, "void ladder(void){");
   fputs(plcdata, Ldsetup);
   fputs("\n", Ldsetup);
+  free(plcdata);
+  fclose (Ldsetup);
 
-  /*free(plcdata);
+  if ( stat(filename, &filestatus) != 0) {
+    fprintf(stderr, "File %s not found\n", filename);
+    return 1;
+  }
+  file_size = filestatus.st_size;
+  printf("%d",file_size);
+
+  file_contents = (char*)malloc(filestatus.st_size);
+  if ( file_contents == NULL) {
+    fprintf(stderr, "Memory error: unable to allocate %d bytes\n", file_size);
+    return 1;
+  }
+  fp = fopen(filename, "rt");
+  if (fp == NULL) 
+  {
+    fprintf(stderr, "Unable to open %s\n", filename);
+    fclose(fp);
+    free(file_contents);
+    return 1;
+  }
+  if ( fread(file_contents, file_size, 1, fp) != 1 )
+  {
+    fprintf(stderr, "Unable t read content of %s\n", filename);
+    fclose(fp);
+    free(file_contents);
+    return 1;
+  }
+  fclose(fp);
+
+  json = (json_char*)file_contents;
+
+  value = json_parse(json,file_size);
+
+  if (value == NULL) 
+  {
+    fprintf(stderr, "Unable to parse data\n");
+    free(file_contents);
+    exit(1);
+  }
+  process_value(value, 0);
+
+  json_value_free(value);
+  free(file_contents);
+
+  Ldsetup = fopen ("autoCodeSetup.c","w"); 
   plcdata = (char*)malloc(strlen(" STPLC_setoneDO(channel_ name)"));
   strcpy(plcdata, " STPLC_setoneDO(channel_ name)");
   fputs(plcdata, Ldsetup);
-  fputs("\n", Ldsetup);*/
+  fputs("\n", Ldsetup);
 
   free(plcdata);
   plcdata = (char*)malloc(strlen("}"));
@@ -107,5 +161,6 @@ int main ()
 
   free(plcdata);
   fclose (Ldsetup);
+
   return 0;
 }
