@@ -1,2 +1,10 @@
- STPLC_setoneDO(channel_ name)
+void ladder(void){
+  ST_PLC_ClrOne_DO(GPIO_PIN_RESET)
+  ST_PLC_SetOne_DO(GPIO_PIN_SET)
+  ST_PLC_SetOne_DO(GPIO_PIN_SET)
+  ST_PLC_SetOne_DO(GPIO_PIN_SET)
+  ST_PLC_SetOne_DO(GPIO_PIN_SET)
+  ST_PLC_ClrOne_DO(GPIO_PIN_RESET)
+  ST_PLC_ClrOne_DO(GPIO_PIN_RESET)
+  ST_PLC_ClrOne_DO(GPIO_PIN_RESET)
 }

@@ -5,79 +5,110 @@
 #include "json.h"
 
 char* nodevalue;
+char* channel;
+char* initialState;
 
 //Function which reads all the node values
 static void process_value(json_value* value, int depth); 
 
 static void process_object(json_value* value, int depth)
 {
-        int length, x;
-        if (value == NULL) {
-                return;
+  int length, x;
+  if (value == NULL) {
+    return;
+  }
+  length = value->u.object.length;
+
+  for (x = 0; x < length; x++) {
+    process_value(value->u.object.values[x].value, depth+1);
+
+    if(depth== 4)
+    { 
+      if(strcmp(value->u.object.values[x].name, "Channel") == 0)
+      {
+        channel = nodevalue;
+      }
+      if(strcmp(value->u.object.values[x].name, "Initial State") == 0)
+      {
+        FILE * Ldsetup; 
+        char *plcdata;
+        Ldsetup = fopen ("autoCodeSetup.c","a"); 
+        initialState = nodevalue;
+        if(strcmp(initialState,"GPIO_PIN_SET") == 0){
+          // set function call
+          int len = strlen(nodevalue) + 18;
+          plcdata = (char*)malloc(len);
+          strcpy(plcdata, "  ST_PLC_SetOne_DO(");
+          strcat(plcdata, channel);
+          strcat(plcdata, ")");
+          fputs(plcdata, Ldsetup);
+          fputs("\n", Ldsetup);
         }
-        length = value->u.object.length;
-        if(length>=1 && depth== 2 )
-        {
-          printf("%s \n",value->u.object.values[0].name);
+        if(strcmp(initialState,"GPIO_PIN_RESET") == 0){
+          // reset function call
+          int len = strlen(nodevalue) + 18;
+          plcdata = (char*)malloc(len);
+          strcpy(plcdata, "  ST_PLC_ClrOne_DO(");
+          strcat(plcdata, channel);
+          strcat(plcdata, ")");
+          fputs(plcdata, Ldsetup);
+          fputs("\n", Ldsetup);
         }
-        for (x = 0; x < length; x++) {
-          process_value(value->u.object.values[x].value, depth+1);
-          if(depth== 4)
-          {
-            printf("= %s\n", value->u.object.values[x].name);
-            printf("%s\n",nodevalue);
-          }
-        }
+        free(plcdata);
+        fclose (Ldsetup);
+      }
+    }
+  }
 }
 
 static void process_array(json_value* value, int depth)
 {
-        int length, x;
-        if (value == NULL) {
-                return;
-        }
-        length = value->u.array.length;
-       // printf("array\n");
-        for (x = 0; x < length; x++) {
-                process_value(value->u.array.values[x], depth);
-        }
+  int length, x;
+  if (value == NULL) {
+    return;
+  }
+  length = value->u.array.length;
+  // printf("array\n");
+  for (x = 0; x < length; x++) {
+    process_value(value->u.array.values[x], depth);
+  }
 }
 
 static void process_value(json_value* value, int depth)
 {
-        int j;
-        if (value == NULL) {
-                return;
-        }
-              switch (value->type) {
-                case json_none:
-                        printf("none\n");
-                        break;
-                case json_null:
-                          printf("NULL\n");
-                         break;        
-                case json_object:
-                        process_object(value, depth+1);
-                        break;
-                case json_array:
-                        process_array(value, depth+1);
-                        break;
-                case json_integer:
-                        printf("int: %10" PRId64 "\n", value->u.integer);
-                        break;
-                case json_double:
-                        printf("double: %f\n", value->u.dbl);
-                        break;
-                case json_string:
-                        free(nodevalue);
-                        nodevalue = (char*)malloc(strlen(value->u.string.ptr));
-                        strcpy(nodevalue, value->u.string.ptr);
-                        //printf("string: %s\n", value->u.string.ptr);
-                        break;
-                case json_boolean:
-                        printf("bool: %d\n", value->u.boolean);
-                        break;
-        }
+  int j;
+  if (value == NULL) {
+    return;
+  }
+  switch (value->type) {
+    case json_none:
+            printf("none\n");
+            break;
+    case json_null:
+              printf("NULL\n");
+              break;        
+    case json_object:
+            process_object(value, depth+1);
+            break;
+    case json_array:
+            process_array(value, depth+1);
+            break;
+    case json_integer:
+            printf("int: %10" PRId64 "\n", value->u.integer);
+            break;
+    case json_double:
+            printf("double: %f\n", value->u.dbl);
+            break;
+    case json_string:
+            free(nodevalue);
+            nodevalue = (char*)malloc(strlen(value->u.string.ptr));
+            strcpy(nodevalue, value->u.string.ptr);
+            //printf("string: %s\n", value->u.string.ptr);
+            break;
+    case json_boolean:
+            printf("bool: %d\n", value->u.boolean);
+            break;
+  }
 }
 
 int main ()
@@ -108,7 +139,6 @@ int main ()
     return 1;
   }
   file_size = filestatus.st_size;
-  printf("%d",file_size);
 
   file_contents = (char*)malloc(filestatus.st_size);
   if ( file_contents == NULL) {
@@ -147,13 +177,7 @@ int main ()
   json_value_free(value);
   free(file_contents);
 
-  Ldsetup = fopen ("autoCodeSetup.c","w"); 
-  plcdata = (char*)malloc(strlen(" STPLC_setoneDO(channel_ name)"));
-  strcpy(plcdata, " STPLC_setoneDO(channel_ name)");
-  fputs(plcdata, Ldsetup);
-  fputs("\n", Ldsetup);
-
-  free(plcdata);
+  Ldsetup = fopen ("autoCodeSetup.c","a"); 
   plcdata = (char*)malloc(strlen("}"));
   strcpy(plcdata, "}");
   fputs(plcdata, Ldsetup);
