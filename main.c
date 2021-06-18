@@ -26,7 +26,9 @@ static void process_object(json_value* value, int depth)
     { 
       if(strcmp(value->u.object.values[x].name, "Channel") == 0)
       {
-        channel = nodevalue;
+        int len = strlen(nodevalue) + 18;
+        channel = (char*)malloc(len);
+        strcpy(channel, nodevalue);
       }
       if(strcmp(value->u.object.values[x].name, "Initial State") == 0)
       {
